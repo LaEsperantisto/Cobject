@@ -1,5 +1,6 @@
-pub mod window;
-
-pub fn hello() {
-    println!("Hello from Cobject engine!");
-}
+pub mod cdrawable;
+pub mod ckey;
+pub mod cmouse;
+pub mod cobject;
+pub mod cpoint;
+pub mod cwindow;

@@ -1,1 +1,1 @@
-/home/aster/dev/rust/Cobject/target/debug/libcobject.rlib: /home/aster/dev/rust/Cobject/src/lib.rs
+/home/aster/dev/rust/Cobject/target/debug/libcobject.rlib: /home/aster/dev/rust/Cobject/src/cdrawable.rs /home/aster/dev/rust/Cobject/src/ckey.rs /home/aster/dev/rust/Cobject/src/cmouse.rs /home/aster/dev/rust/Cobject/src/cobject.rs /home/aster/dev/rust/Cobject/src/cpoint.rs /home/aster/dev/rust/Cobject/src/cwindow.rs /home/aster/dev/rust/Cobject/src/lib.rs
