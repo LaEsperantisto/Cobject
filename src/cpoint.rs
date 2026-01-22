@@ -11,9 +11,7 @@ impl CPoint {
 
 impl From<Option<(f32, f32)>> for CPoint {
     fn from(o: Option<(f32, f32)>) -> Self {
-        Self {
-            x: o.unwrap().0,
-            y: o.unwrap().0,
-        }
+        let (x, y) = o.unwrap();
+        Self { x, y }
     }
 }
