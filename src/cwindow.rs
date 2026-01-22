@@ -63,6 +63,11 @@ impl CWindow {
     }
 
     pub fn point_collides(&self, point: &CPoint, obj: &CObject) -> bool {
+        if (obj.x < point.x as usize) && (point.x < (obj.x + obj.width) as f32) {
+            if (obj.x < point.y as usize && obj.y < obj.y + obj.height) {
+                return true;
+            }
+        }
         false
     }
 }

@@ -1,4 +1,5 @@
 use cobject::ckey::CKey;
+use cobject::cmouse::CMouse;
 use cobject::cobject::CObject;
 use cobject::cpoint::CPoint;
 use cobject::cwindow::CWindow;
@@ -12,7 +13,8 @@ fn main() {
             break;
         }
         let mouse_pos = window.mouse_pos();
-        if window.point_collides(&CPoint::from(mouse_pos), &obj) {
+        if window.point_collides(&CPoint::from(mouse_pos), &obj) && window.is_clicked(CMouse::Left)
+        {
             break;
         };
 

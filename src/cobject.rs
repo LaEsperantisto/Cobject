@@ -2,11 +2,11 @@ use crate::cdrawable::CDrawable;
 use crate::cwindow::CWindow;
 
 pub struct CObject {
-    x: usize,
-    y: usize,
-    width: usize,
-    height: usize,
-    color: u32,
+    pub x: usize,
+    pub y: usize,
+    pub width: usize,
+    pub height: usize,
+    pub color: u32,
 }
 
 impl CObject {
