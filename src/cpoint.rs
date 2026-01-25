@@ -9,9 +9,15 @@ impl CPoint {
     }
 }
 
-impl From<Option<(f32, f32)>> for CPoint {
-    fn from(o: Option<(f32, f32)>) -> Self {
-        let (x, y) = o.unwrap();
+impl From<(f32, f32)> for CPoint {
+    fn from(o: (f32, f32)) -> Self {
+        let (x, y) = o;
         Self { x, y }
+    }
+}
+
+impl Into<(f32, f32)> for CPoint {
+    fn into(self) -> (f32, f32) {
+        (self.x, self.y)
     }
 }

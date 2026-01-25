@@ -25,6 +25,11 @@ impl CObject {
             && py >= self.y as f32
             && py <= (self.y + self.height) as f32
     }
+
+    pub fn set_pos(&mut self, x: usize, y: usize) {
+        self.x = x;
+        self.y = y;
+    }
 }
 
 impl CDrawable for CObject {

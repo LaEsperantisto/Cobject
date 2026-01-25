@@ -182,6 +182,11 @@ cargo run
 * Easy to read & extend
 * Educational first, performance second
 
+### Images
+
+Images have a custom file extension: `foo.imace`. They can be opened using CImage::new
+
+
 ---
 
 ### Roadmap

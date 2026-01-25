@@ -1,7 +1,4 @@
-use crate::cbasic_button::CBasicButton;
-use crate::cdrawable::CDrawable;
-use crate::cobject::CObject;
-use crate::cwindow::{CWindow, CLOSE_REQUESTED};
+use crate::{CBasicButton, CDrawable, CObject, CWindow, CLOSE_REQUESTED, TITLE_BAR_HEIGHT};
 use std::sync::atomic::Ordering;
 
 pub struct CTitleBar {
@@ -13,21 +10,27 @@ impl CTitleBar {
     pub fn new(title: String, window: &CWindow) -> Self {
         Self {
             title,
-            bg: CObject::new(0, 0, window.get_width(), 30, 0x00FFFFFF),
+            bg: CObject::new(0, 0, window.get_width(), TITLE_BAR_HEIGHT, 0x00FFFFFF),
         }
     }
 
     pub fn init(&self, window: &mut CWindow) {
-        let close_hitbox = CObject::new(window.get_width() - 22, 3, 22, 22, 0);
+        let close_hitbox = CObject::new(window.get_width() - 25, 3, 22, 22, 0);
 
         let close_button = CBasicButton::new(
             || {
                 CLOSE_REQUESTED.store(true, Ordering::Relaxed);
             },
+            || {},
+            || {},
             close_hitbox,
         );
 
         window.add_button(Box::new(close_button));
+    }
+
+    pub fn update_width(&mut self, width: usize) {
+        self.bg.width = width;
     }
 }
 
@@ -37,7 +40,7 @@ impl CDrawable for CTitleBar {
         self.bg.draw(pixels, width, height);
 
         // draw close "X"
-        let cx = width.saturating_sub(15);
+        let cx = width.saturating_sub(20);
         let cy = 8;
         let size = 10;
         let thickness = 2;
