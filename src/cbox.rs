@@ -72,13 +72,13 @@ impl CBox {
         }
         if other.is_pushable() {
             other.push(-normal.0 * push_strength, -normal.1 * push_strength);
-            if normal.1 != 0.0 {
-                other.push(
-                    (self.x_velocity + other.get_velocity().0) * push_strength / 1.0
-                        - other.get_velocity().0,
-                    0.0,
-                );
-            }
+            // if normal.1 != 0.0 {
+            //     other.push(
+            //         (self.x_velocity + other.get_velocity().0) * push_strength / 1.0
+            //             - other.get_velocity().0,
+            //         0.0,
+            //     );
+            // }
         }
     }
 }
@@ -127,9 +127,7 @@ impl CObject for CBox {
                     }
                 }
 
-                if normal.1 == 0.0 {
-                    self.resolve_push(&mut *other, normal);
-                }
+                self.resolve_push(&mut *other, normal);
             }
         }
 
@@ -150,7 +148,6 @@ impl CObject for CBox {
         if self.has_gravity {
             self.push(0.0, 0.1 * self.gravity);
         }
-
         self.face.set_pos(self.x, self.y);
     }
 
