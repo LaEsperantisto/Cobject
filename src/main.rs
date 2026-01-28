@@ -1,6 +1,4 @@
-use cobject::{
-    ccolor, default_font, get_platform, CBox, CBoxCannon, CImage, CPlayer, CText, CWindow,
-};
+use cobject::{ccolor, default_font, get_platform, CBoxCannon, CImage, CPlayer, CText, CWindow};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -28,11 +26,24 @@ fn main() {
 
     window.add_input_listener(player.clone());
     window.add_object(player.clone());
-    let my_box = Rc::new(RefCell::new(CBoxCannon::new(200.0, 1.0, 100, 100)));
+    let my_box = Rc::new(RefCell::new(CBoxCannon::new(
+        200.0,
+        1.0,
+        100,
+        100,
+        ccolor::BLUE,
+    )));
     window.add_object(my_box.clone());
     window.add_input_listener(my_box.clone());
-    let my_box = Rc::new(RefCell::new(CBox::new(500.0, 1.0, 100, 100, ccolor::RED)));
-    window.add_object(my_box);
+    let my_box = Rc::new(RefCell::new(CBoxCannon::new(
+        500.0,
+        1.0,
+        100,
+        100,
+        ccolor::RED,
+    )));
+    window.add_object(my_box.clone());
+    window.add_input_listener(my_box.clone());
 
     let platform = Rc::new(RefCell::new(get_platform(0.0, 870.0, 1700, 50)));
     window.add_object(platform);

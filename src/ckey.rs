@@ -112,64 +112,6 @@ pub enum CKey {
     Unknown = 106,
 }
 
-impl From<CKey> for Key {
-    fn from(key: CKey) -> minifb::Key {
-        match key {
-            CKey::Key0 => minifb::Key::Key0,
-            CKey::Key1 => minifb::Key::Key1,
-            CKey::Key2 => minifb::Key::Key2,
-            CKey::Key3 => minifb::Key::Key3,
-            CKey::Key4 => minifb::Key::Key4,
-            CKey::Key5 => minifb::Key::Key5,
-            CKey::Key6 => minifb::Key::Key6,
-            CKey::Key7 => minifb::Key::Key7,
-            CKey::Key8 => minifb::Key::Key8,
-            CKey::Key9 => minifb::Key::Key9,
-            CKey::A => minifb::Key::A,
-            CKey::B => minifb::Key::B,
-            CKey::C => minifb::Key::C,
-            CKey::D => minifb::Key::D,
-            CKey::E => minifb::Key::E,
-            CKey::F => minifb::Key::F,
-            CKey::G => minifb::Key::G,
-            CKey::H => minifb::Key::H,
-            CKey::I => minifb::Key::I,
-            CKey::J => minifb::Key::J,
-            CKey::K => minifb::Key::K,
-            CKey::L => minifb::Key::L,
-            CKey::M => minifb::Key::M,
-            CKey::N => minifb::Key::N,
-            CKey::O => minifb::Key::O,
-            CKey::P => minifb::Key::P,
-            CKey::Q => minifb::Key::Q,
-            CKey::R => minifb::Key::R,
-            CKey::S => minifb::Key::S,
-            CKey::T => minifb::Key::T,
-            CKey::U => minifb::Key::U,
-            CKey::V => minifb::Key::V,
-            CKey::W => minifb::Key::W,
-            CKey::X => minifb::Key::X,
-            CKey::Y => minifb::Key::Y,
-            CKey::Z => minifb::Key::Z,
-            CKey::Escape => minifb::Key::Escape,
-            CKey::Space => minifb::Key::Space,
-            CKey::Enter => minifb::Key::Enter,
-            CKey::Tab => minifb::Key::Tab,
-            CKey::LeftShift => minifb::Key::LeftShift,
-            CKey::RightShift => minifb::Key::RightShift,
-            CKey::LeftCtrl => minifb::Key::LeftCtrl,
-            CKey::RightCtrl => minifb::Key::RightCtrl,
-            CKey::LeftAlt => minifb::Key::LeftAlt,
-            CKey::RightAlt => minifb::Key::RightAlt,
-            CKey::Up => minifb::Key::Up,
-            CKey::Down => minifb::Key::Down,
-            CKey::Left => minifb::Key::Left,
-            CKey::Right => minifb::Key::Right,
-            _ => minifb::Key::Unknown,
-        }
-    }
-}
-
 impl From<Key> for CKey {
     fn from(key: Key) -> CKey {
         match key {

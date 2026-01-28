@@ -18,6 +18,7 @@ pub struct CBox {
     pub can_be_pushed: bool,
     pub confined_to_window: bool,
     pub gravity: f32,
+    pub on_ground: bool,
 }
 
 impl CBox {
@@ -34,6 +35,7 @@ impl CBox {
             can_be_pushed: true,
             confined_to_window: false,
             gravity: 1.0,
+            on_ground: false,
         }
     }
 
@@ -62,7 +64,6 @@ impl CBox {
         if self.can_be_pushed && other.is_pushable() {
             self.x_velocity += normal.0 * push_strength;
             self.y_velocity += normal.1 * push_strength;
-            other.push(normal.0 * push_strength, normal.1 * push_strength);
         }
         if self.can_be_pushed {
             if normal.1 != 0.0 {
@@ -94,13 +95,10 @@ impl CObject for CBox {
     fn update(&mut self, objects: &[Rc<RefCell<dyn CObject + 'static>>]) {
         self.x += self.x_velocity;
         self.y += self.y_velocity;
-        // self.face.set_pos(self.x, self.y);
-
-        if self.has_gravity {
-            self.push(0.0, 0.1 * self.gravity);
-        }
 
         self.face.set_pos(self.x, self.y);
+
+        self.on_ground = false;
 
         for object in objects {
             let hitbox = object.borrow().hitbox();
@@ -109,14 +107,29 @@ impl CObject for CBox {
 
                 let normal = self.collision_normal(&hitbox);
 
-                if normal.0 != 0.0 {
-                    self.x_velocity = 0.0;
-                }
-                if normal.1 != 0.0 {
-                    self.y_velocity = 0.0;
+                self.face.set_pos(self.x, self.y);
+
+                if self.is_pushable() {
+                    if normal.0 < 0.0 {
+                        self.x = hitbox.x - self.face.width as f32;
+                        self.x_velocity = 0.0;
+                    } else if normal.0 > 0.0 {
+                        self.x = hitbox.x + hitbox.width as f32;
+                        self.x_velocity = 0.0;
+                    }
+
+                    if normal.1 != 0.0 {
+                        self.y_velocity = 0.0;
+                        if normal.1 < 0.0 {
+                            self.y = hitbox.y - self.face.height as f32;
+                            self.on_ground = true;
+                        }
+                    }
                 }
 
-                self.resolve_push(&mut *other, normal);
+                if normal.1 == 0.0 {
+                    self.resolve_push(&mut *other, normal);
+                }
             }
         }
 
@@ -133,6 +146,12 @@ impl CObject for CBox {
             self.y = 0.0;
             self.y_velocity = 0.0;
         }
+
+        if self.has_gravity {
+            self.push(0.0, 0.1 * self.gravity);
+        }
+
+        self.face.set_pos(self.x, self.y);
     }
 
     fn hitbox(&self) -> CArea {

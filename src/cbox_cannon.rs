@@ -1,4 +1,4 @@
-use crate::{ccolor, CArea, CBox, CDrawable, CInputListener, CKey, CObject};
+use crate::{CArea, CBox, CDrawable, CInputListener, CKey, CObject};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -12,9 +12,9 @@ pub struct CBoxCannon {
 }
 
 impl CBoxCannon {
-    pub fn new(x: f32, y: f32, width: usize, height: usize) -> Self {
+    pub fn new(x: f32, y: f32, width: usize, height: usize, color: u32) -> Self {
         Self {
-            this_box: CBox::new(x, y, width, height, ccolor::BLUE),
+            this_box: CBox::new(x, y, width, height, color),
             x,
             y,
             width,
@@ -34,9 +34,15 @@ impl CObject for CBoxCannon {
     fn update(&mut self, objects: &[Rc<RefCell<dyn CObject>>]) {
         self.this_box.update(objects);
         self.box_counter += 1;
-        if self.box_counter >= 2000 {
+        if self.box_counter >= 50000 {
             self.box_counter = 0;
-            self.this_box = CBox::new(self.x, self.y, self.width, self.height, ccolor::BLUE)
+            self.this_box = CBox::new(
+                self.x,
+                self.y,
+                self.width,
+                self.height,
+                self.this_box.face.color,
+            )
         }
     }
 

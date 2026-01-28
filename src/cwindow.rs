@@ -108,9 +108,6 @@ impl CWindow {
                 .borrow()
                 .draw(&mut self.pixels, self.width, self.height);
         }
-        // for object in &self.objects {
-        //     object.borrow_mut().update(self.objects.as_slice());
-        // }
 
         self.window
             .update_with_buffer(&self.pixels, self.width, self.height)
