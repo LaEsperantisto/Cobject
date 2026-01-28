@@ -94,7 +94,11 @@ impl CFont {
 
                     for sy in 0..y_scale {
                         for sx in 0..x_scale {
-                            pixels.push(CPixel::new(base_x + sx, base_y + sy, color));
+                            pixels.push(CPixel::new(
+                                (base_x + sx) as f32,
+                                (base_y + sy) as f32,
+                                color,
+                            ));
                         }
                     }
 
@@ -114,5 +118,5 @@ impl CFont {
 
 /// Load the default font
 pub fn default_font() -> CFont {
-    CFont::new("cfonts/default.cfont".to_string())
+    CFont::new("/home/aster/dev/rust/Cobject/cfonts/default.cfont".to_string())
 }

@@ -1,21 +1,26 @@
-use crate::{CBasicButton, CDrawable, CObject, CWindow, CLOSE_REQUESTED, TITLE_BAR_HEIGHT};
+use crate::{
+    get_window_width, CArea, CBasicButton, CDrawable, CRect, CWindow, CLOSE_REQUESTED,
+    TITLE_BAR_HEIGHT,
+};
+use std::cell::RefCell;
+use std::rc::Rc;
 use std::sync::atomic::Ordering;
 
 pub struct CTitleBar {
-    title: String,
-    bg: CObject,
+    _title: String,
+    bg: CRect,
 }
 
 impl CTitleBar {
-    pub fn new(title: String, window: &CWindow) -> Self {
+    pub fn new(title: String, _window: &CWindow) -> Self {
         Self {
-            title,
-            bg: CObject::new(0, 0, window.get_width(), TITLE_BAR_HEIGHT, 0x00FFFFFF),
+            _title: title,
+            bg: CRect::new(0.0, 0.0, get_window_width(), TITLE_BAR_HEIGHT, 0x00FFFFFF),
         }
     }
 
     pub fn init(&self, window: &mut CWindow) {
-        let close_hitbox = CObject::new(window.get_width() - 25, 3, 22, 22, 0);
+        let close_hitbox = CArea::new((get_window_width() - 25) as f32, 3.0, 22, 22);
 
         let close_button = CBasicButton::new(
             || {
@@ -26,7 +31,7 @@ impl CTitleBar {
             close_hitbox,
         );
 
-        window.add_button(Box::new(close_button));
+        window.add_button(Rc::new(RefCell::new(close_button)));
     }
 
     pub fn update_width(&mut self, width: usize) {

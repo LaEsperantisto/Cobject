@@ -1,10 +1,10 @@
-use crate::{cbutton::CButton, cobject::CObject};
+use crate::{cbutton::CButton, CArea};
 
 pub struct CBasicButton {
     clicked_action: Box<dyn Fn()>,
     held_action: Box<dyn Fn()>,
     released_action: Box<dyn Fn()>,
-    pub hitbox: CObject,
+    pub hitbox: CArea,
 }
 
 impl CBasicButton {
@@ -12,7 +12,7 @@ impl CBasicButton {
         clicked_action: F1,
         held_action: F2,
         released_action: F3,
-        hitbox: CObject,
+        hitbox: CArea,
     ) -> Self {
         Self {
             clicked_action: Box::new(clicked_action),
@@ -36,7 +36,7 @@ impl CButton for CBasicButton {
         (self.held_action)();
     }
 
-    fn hitbox(&self) -> &CObject {
+    fn hitbox(&self) -> &CArea {
         &self.hitbox
     }
 }

@@ -1,9 +1,15 @@
 use crate::ctitle_bar::CTitleBar;
-use crate::{cbutton::CButton, cdrawable::CDrawable, cinput::CInput, cpoint::CPoint};
+use crate::{
+    cbutton::CButton, cdrawable::CDrawable, cinput::CInput, cpoint::CPoint, CInputListener, CObject,
+};
 use minifb::{Window, WindowOptions};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
 pub static CLOSE_REQUESTED: AtomicBool = AtomicBool::new(false);
+pub static WINDOW_HEIGHT: AtomicUsize = AtomicUsize::new(0);
+pub static WINDOW_WIDTH: AtomicUsize = AtomicUsize::new(0);
 pub const TITLE_BAR_HEIGHT: usize = 30;
 
 pub struct CWindow {
@@ -13,16 +19,16 @@ pub struct CWindow {
     pixels: Vec<u32>,
     pub input: CInput,
     running: bool,
-    buttons: Vec<Box<dyn CButton>>,
-    objects: Vec<Box<dyn CDrawable>>,
-    close_requested: bool,
+    buttons: Vec<Rc<RefCell<dyn CButton>>>,
+    drawables: Vec<Rc<RefCell<dyn CDrawable>>>,
+    objects: Vec<Rc<RefCell<dyn CObject>>>,
 }
 
 impl CWindow {
     pub fn new(width: usize, height: usize, title: String) -> Self {
         Self {
             window: Window::new(
-                (&title).as_ref(),
+                &title,
                 width,
                 height,
                 WindowOptions {
@@ -37,21 +43,9 @@ impl CWindow {
             input: CInput::new(),
             running: true,
             buttons: Vec::new(),
-            objects: vec![],
-            close_requested: false,
+            drawables: Vec::new(),
+            objects: Vec::new(),
         }
-    }
-    #[inline(always)]
-    pub fn get_width(&self) -> usize {
-        self.width
-    }
-    #[inline(always)]
-    pub fn get_height(&self) -> usize {
-        self.height
-    }
-    #[inline(always)]
-    pub fn get_size(&self) -> (usize, usize) {
-        (self.width, self.height)
     }
 
     pub fn is_open(&self) -> bool {
@@ -67,75 +61,105 @@ impl CWindow {
             self.running = false;
         }
 
-        let Some((mx, my)) = self.input.mouse_pos else {
-            return;
-        };
-        let point = CPoint::new(mx, my);
-
-        if self.input.mouse_down {
-            for button in &self.buttons {
-                if button.hitbox().contains_point(point.x, point.y) {
-                    button.held();
-                    if self.input.mouse_clicked {
-                        button.clicked();
-                    }
-                    if self.input.mouse_released {
-                        button.released();
+        // --- Button input ---
+        if let Some((mx, my)) = self.input.mouse_pos {
+            let point = CPoint::new(mx, my);
+            if self.input.mouse_down {
+                for button in &self.buttons {
+                    if button.borrow().hitbox().contains_point(point.x, point.y) {
+                        button.borrow().held();
+                        if self.input.mouse_clicked {
+                            button.borrow().clicked();
+                        }
+                        if self.input.mouse_released {
+                            button.borrow().released();
+                        }
                     }
                 }
             }
         }
+
+        let len = self.objects.len();
+
+        for i in 0..len {
+            let mut object = self.objects[i].borrow_mut();
+            let mut objects_without_object = vec![];
+            for j in 0..len {
+                if j != i {
+                    objects_without_object.push(self.objects[j].clone());
+                }
+            }
+
+            object.update(&objects_without_object);
+        }
     }
 
-    #[inline(always)]
     pub fn fill(&mut self, color: u32) {
         self.pixels.fill(color);
     }
 
-    #[inline(always)]
     pub fn draw(&mut self, obj: &dyn CDrawable) {
         obj.draw(&mut self.pixels, self.width, self.height);
     }
 
     pub fn show_window(&mut self) {
-        for object in &self.objects {
-            object.draw(&mut self.pixels, self.width, self.height);
+        for drawable in &self.drawables {
+            drawable
+                .borrow()
+                .draw(&mut self.pixels, self.width, self.height);
         }
+        // for object in &self.objects {
+        //     object.borrow_mut().update(self.objects.as_slice());
+        // }
 
         self.window
-            .update_with_buffer((&self.pixels).as_ref(), self.width, self.height)
+            .update_with_buffer(&self.pixels, self.width, self.height)
             .unwrap();
     }
-    #[inline(always)]
+
     pub fn close(&mut self) {
         self.running = false;
     }
 
-    pub fn add_button(&mut self, button: Box<dyn CButton>) {
+    pub fn add_button(&mut self, button: Rc<RefCell<dyn CButton>>) {
         self.buttons.push(button);
     }
 
-    pub fn request_close(&mut self) {
-        self.close_requested = true;
-    }
-
     pub fn init(&mut self) {
+        set_window_height(self.height);
+        set_window_width(self.width);
+
         let title = CTitleBar::new("Test".into(), self);
         title.init(self);
-        self.objects.push(Box::new(title));
+        self.drawables.push(Rc::new(RefCell::new(title)));
+        self.window.set_position(0, 0);
     }
 
-    pub fn add_object(&mut self, object: Box<dyn CDrawable>) {
+    pub fn add_drawable(&mut self, drawable: Rc<RefCell<dyn CDrawable>>) {
+        self.drawables.push(drawable);
+    }
+
+    pub fn add_object(&mut self, object: Rc<RefCell<dyn CObject>>) {
+        self.drawables.push(object.clone());
         self.objects.push(object);
     }
 
-    /*pub fn handle_resize(&mut self) {
-        let (new_width, new_height) = self.window.get_size();
+    pub fn add_input_listener(&mut self, listener: Rc<RefCell<dyn CInputListener>>) {
+        self.input.add_listener(listener);
+    }
+}
 
-        if new_width != self.width || new_height != self.height {
-            self.width = new_width;
-            self.height = new_height;
-            self.pixels.resize(self.width * self.height, ccolor::BLACK);
-        }
-    }*/
+pub fn get_window_width() -> usize {
+    WINDOW_WIDTH.load(Ordering::Relaxed)
+}
+pub fn get_window_height() -> usize {
+    WINDOW_HEIGHT.load(Ordering::Relaxed)
+}
+
+fn set_window_width(width: usize) {
+    WINDOW_WIDTH.store(width, Ordering::Relaxed);
+}
+
+fn set_window_height(height: usize) {
+    WINDOW_HEIGHT.store(height, Ordering::Relaxed);
 }

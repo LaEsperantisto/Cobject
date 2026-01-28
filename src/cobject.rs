@@ -1,47 +1,34 @@
-use crate::cdrawable::CDrawable;
+use crate::{CArea, CDrawable};
+use std::cell::RefCell;
+use std::rc::Rc;
 
-#[derive(Debug, Clone)]
-pub struct CObject {
-    pub x: usize,
-    pub y: usize,
-    pub width: usize,
-    pub height: usize,
-    pub color: u32,
-}
-
-impl CObject {
-    pub fn new(x: usize, y: usize, width: usize, height: usize, color: u32) -> Self {
-        Self {
-            x,
-            y,
-            width,
-            height,
-            color,
-        }
+pub trait CObject: CDrawable {
+    fn update(&mut self, objects: &[Rc<RefCell<dyn CObject>>]);
+    fn hitbox(&self) -> CArea;
+    fn is_visible(&self) -> bool;
+    fn is_pushable(&self) -> bool {
+        true
     }
-    pub fn contains_point(&self, px: f32, py: f32) -> bool {
-        px >= self.x as f32
-            && px <= (self.x + self.width) as f32
-            && py >= self.y as f32
-            && py <= (self.y + self.height) as f32
+    fn get_velocity(&self) -> (f32, f32);
+    fn push(&mut self, x_dir: f32, y_dir: f32);
+    fn get_weight(&self) -> i64;
+    fn get_density(&self) -> u64;
+    fn get_horizontal_drag_force(&self) -> f64;
+    fn get_volume(&self) -> u64;
+    fn get_mass(&self) -> u64 {
+        self.get_density() * self.get_volume()
     }
+    fn get_side_face_area(&self) -> f32;
 
-    pub fn set_pos(&mut self, x: usize, y: usize) {
-        self.x = x;
-        self.y = y;
+    fn get_terminal_horizontal_velocity(&self) -> f64 {
+        ((2 * self.get_mass()) as f64
+            / (AIR_DENSITY
+                * self.get_side_face_area() as f64
+                * 1.05
+                * self.get_horizontal_drag_force()))
+        .sqrt()
     }
 }
 
-impl CDrawable for CObject {
-    fn draw(&self, pixels: &mut Vec<u32>, screen_width: usize, screen_height: usize) {
-        let max_x = (self.x + self.width).min(screen_width);
-        let max_y = (self.y + self.height).min(screen_height);
-
-        for y in self.y..max_y {
-            let row_start = y * screen_width;
-            for x in self.x..max_x {
-                pixels[row_start + x] = self.color;
-            }
-        }
-    }
-}
+pub const GRAVITATIONAL_ACCELERATION: f64 = 9.8;
+pub const AIR_DENSITY: f64 = 1.225;

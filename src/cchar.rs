@@ -5,7 +5,7 @@ use crate::CPixel;
 pub struct CChar {
     c: char,
     font: CFont,
-    size: u32,
+    _size: u32,
     x: usize,
     y: usize,
     color: u32,
@@ -25,7 +25,7 @@ impl CChar {
         CChar {
             c,
             font,
-            size,
+            _size: size,
             x,
             y,
             color,
@@ -36,9 +36,6 @@ impl CChar {
 
 impl CDrawable for CChar {
     fn draw(&self, pixels: &mut Vec<u32>, width: usize, height: usize) {
-        let x = self.x;
-        let y = self.y;
-        let size = self.size;
         let char_pixels =
             self.font
                 .get_pixels(self.x, self.y, self.color, self.bg_color, self.c, 1, 1);

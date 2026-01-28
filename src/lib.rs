@@ -1,33 +1,30 @@
+pub mod carea;
 pub mod cbasic_button;
+pub mod cbox;
+pub mod cbox_cannon;
 pub mod cbutton;
 pub mod cchar;
 pub mod ccolor;
 pub mod cdrawable;
 pub mod cfont;
 pub mod cimage;
-pub mod cinit;
 pub mod cinput;
+pub mod cinput_listener;
 pub mod ckey;
 pub mod cmouse;
 pub mod cobject;
 pub mod cpixel;
+pub mod cplatform;
+pub mod cplayer;
 pub mod cpoint;
+pub mod crect;
 pub mod ctext;
 pub mod ctitle_bar;
 pub mod cutils;
 pub mod cwindow;
 
-pub use cbasic_button::*;
-pub use cdrawable::*;
-pub use cfont::*;
-pub use cimage::*;
-pub use cinit::*;
-pub use ckey::*;
-pub use cmouse::*;
-pub use cobject::*;
-pub use cpixel::*;
-pub use cpoint::*;
-pub use ctext::*;
-pub use ctitle_bar::*;
-pub use cutils::*;
-pub use cwindow::*;
+pub use {
+    carea::*, cbasic_button::*, cbox::*, cbox_cannon::*, cdrawable::*, cfont::*, cimage::*,
+    cinput_listener::*, ckey::*, cmouse::*, cobject::*, cpixel::*, cplatform::*, cplayer::*,
+    cpoint::*, crect::*, ctext::*, ctitle_bar::*, cutils::*, cwindow::*,
+};
