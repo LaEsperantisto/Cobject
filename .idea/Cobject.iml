@@ -5,9 +5,12 @@
       <sourceFolder url="file://$MODULE_DIR$/extras/png_to_imace/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/extras/png_to_imace/src/png_to_imace/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cengine/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmacros/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/extras/png_to_imace/src/png_to_imace/target" />
       <excludeFolder url="file://$MODULE_DIR$/extras/png_to_imace/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/cengine/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

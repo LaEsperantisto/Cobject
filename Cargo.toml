@@ -1,7 +1,5 @@
-[package]
-name = "cobject"
-version = "0.0.2"
-edition = "2024"
-
-[dependencies]
-minifb = "0.28.0"
+[workspace]
+members = [
+    "cengine",
+    "cmacros"
+]
