@@ -1,1 +1,0 @@
-Map<std::iter::Chain<std::slice::Iter<'_, Rc<RefCell<(dyn cobject::CObject + 'static)>>>, std::slice::Iter<'_, Rc<RefCell<(dyn cobject::CObject + 'static)>>>>, {closure@src/cwindow.rs:89:52: 89:55}>

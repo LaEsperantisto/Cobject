@@ -1,0 +1,9 @@
+[package]
+name = "cobject"
+version = "0.0.2"
+edition = "2024"
+
+[dependencies]
+minifb = "0.28.0"
+cmacros = { path = "../cmacros" }
+log = "0.4.29"
