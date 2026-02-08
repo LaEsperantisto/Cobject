@@ -1,6 +1,6 @@
 [package]
 name = "cobject"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "A game engine that uses minifb as a foundation and currently only supports 2D."
 homepage = "https://github.com/LaEsperantisto/Cobject"
