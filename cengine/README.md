@@ -138,7 +138,7 @@ This avoids querying the OS multiple times per frame.
 The engine includes a custom title bar with:
 
 * Background rendering
-* A thick ❌ close button
+* A thick `❌` close button
 * Safe shutdown (no process::exit)
 
 The title bar registers its button during initialization:
