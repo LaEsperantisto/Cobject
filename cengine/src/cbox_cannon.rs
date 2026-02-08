@@ -2,8 +2,9 @@ use crate::{CArea, CBox, CDrawable, CInputListener, CKey, CObject};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct CBoxCannon {
-    this_box: CBox,
+    pub this_box: CBox,
     x: f32,
     y: f32,
     width: f32,
@@ -36,22 +37,33 @@ impl CObject for CBoxCannon {
         self.box_counter += 1;
         if self.box_counter >= 50000 {
             self.box_counter = 0;
-            self.this_box = CBox::new(
-                self.x,
-                self.y,
-                self.width,
-                self.height,
-                self.this_box.face.color,
-            )
+            self.this_box = CBox {
+                x: self.x,
+                y: self.y,
+                x_velocity: self.this_box.x_velocity,
+                y_velocity: self.this_box.y_velocity,
+                confined_to_window: self.this_box.confined_to_window,
+                bounciness: self.this_box.bounciness,
+                can_be_pushed: self.this_box.can_be_pushed,
+                face: self.this_box.face.clone(),
+                relative_gravity: self.this_box.relative_gravity,
+                is_visible: self.this_box.is_visible,
+                has_gravity: self.this_box.has_gravity,
+                is_solid: self.this_box.is_solid,
+                gravity: self.this_box.gravity,
+                on_ground: false,
+                window_loops: self.this_box.window_loops,
+                charge: self.this_box.charge,
+            }
         }
-    }
-
-    fn get_hitbox(&self) -> CArea {
-        self.this_box.get_hitbox()
     }
 
     fn is_visible(&self) -> bool {
         self.this_box.is_visible()
+    }
+
+    fn get_hitbox(&self) -> CArea {
+        self.this_box.get_hitbox()
     }
 
     fn get_velocity(&self) -> (f32, f32) {

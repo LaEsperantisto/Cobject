@@ -15,22 +15,26 @@ pub trait CObject: CDrawable {
     fn get_density(&self) -> f64;
     fn get_horizontal_drag_force(&self) -> f64;
     fn get_volume(&self) -> u64;
-    fn get_mass(&self) -> f64 {
-        self.get_density() * self.get_volume() as f64
+    fn get_mass(&self) -> f32 {
+        self.get_density() as f32 * self.get_volume() as f32
     }
     fn get_side_face_area(&self) -> f32;
 
-    fn get_terminal_horizontal_velocity(&self) -> f64 {
+    fn get_terminal_horizontal_velocity(&self) -> f32 {
         ((2.0 * self.get_mass())
             / (AIR_DENSITY
                 * self.get_side_face_area() as f64
                 * 1.05
-                * self.get_horizontal_drag_force()))
-        .sqrt()
+                * self.get_horizontal_drag_force()) as f32)
+            .sqrt()
     }
 
     fn get_friction(&self) -> f32 {
         0.1
+    }
+
+    fn get_charge(&self) -> f32 {
+        0.0
     }
 }
 

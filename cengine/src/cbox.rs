@@ -5,7 +5,7 @@ use std::cell::RefCell;
 use std::f64::consts::PI;
 use std::rc::Rc;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CBox {
     pub x: f32,
     pub y: f32,
@@ -19,6 +19,10 @@ pub struct CBox {
     pub confined_to_window: bool,
     pub gravity: f32,
     pub on_ground: bool,
+    pub bounciness: f32,
+    pub relative_gravity: f32,
+    pub window_loops: bool,
+    pub charge: f32,
 }
 
 impl CBox {
@@ -36,6 +40,10 @@ impl CBox {
             confined_to_window: false,
             gravity: 1.0,
             on_ground: false,
+            bounciness: 1.0,
+            relative_gravity: 0.0,
+            window_loops: false,
+            charge: 0.0,
         }
     }
 
@@ -55,12 +63,24 @@ impl CBox {
         }
     }
 
+    pub fn collision_vector(&self, other: &CArea) -> (f32, f32) {
+        let a = self.get_hitbox();
+
+        let dx = a.center_x() - other.center_x();
+        let dy = a.center_y() - other.center_y();
+
+        let px = (a.width() + other.width()) * 0.5 - dx.abs();
+        let py = (a.height() + other.height()) * 0.5 - dy.abs();
+
+        (dx.signum(), dy.signum())
+    }
+
     fn resolve_push(&mut self, other: &mut dyn CObject, normal: (f32, f32)) {
         if !self.can_be_pushed && !other.is_pushable() {
             return;
         }
 
-        let push_strength = 0.5; // default 0.5
+        let push_strength = 0.5 * self.bounciness;
 
         if self.can_be_pushed && other.is_pushable() {
             self.x_velocity += normal.0 * push_strength;
@@ -75,6 +95,15 @@ impl CBox {
                 self.x_velocity /= 1.0 + other.get_friction();
             }
         }
+    }
+
+    pub fn get_distance(&mut self, other: &mut dyn CObject) -> f32 {
+        let x1 = self.x;
+        let y1 = self.y;
+        let x2 = other.get_hitbox().min_x();
+        let y2 = other.get_hitbox().min_y();
+
+        (x1 - x2).hypot(y1 - y2).abs()
     }
 }
 
@@ -125,26 +154,62 @@ impl CObject for CBox {
                     self.face.set_pos(self.x, self.y);
                 }
                 self.resolve_push(&mut *other, normal);
+            } else if self.is_pushable() {
+                let hitbox = object.borrow().get_hitbox();
+
+                let dx = hitbox.center_x() - self.get_hitbox().center_x();
+                let dy = hitbox.center_y() - self.get_hitbox().center_y();
+
+                let dist_sq = dx * dx + dy * dy;
+                let dist = dist_sq.sqrt();
+
+                let gravity_force =
+                    self.relative_gravity * self.get_mass() * object.borrow().get_mass() / dist_sq;
+
+                let charge_force = self.get_charge() * object.borrow().get_charge() / dist_sq;
+
+                let force = gravity_force * 0.0000001 + charge_force * 100000000000.0;
+
+                let dt = 0.016;
+
+                self.x_velocity += force * dx / dist * dt;
+                self.y_velocity += force * dy / dist * dt;
             }
         }
 
         let area = CArea::from(self.face.clone());
 
         if area.min_x() < 0.0 {
-            self.x = 0.0;
-            self.x_velocity = 0.0;
+            if self.window_loops {
+                self.x = get_window_width() as f32 - area.width();
+            } else {
+                self.x_velocity = self.bounciness - 1.0;
+                self.x = 0.0;
+            }
         } else if area.max_x() > get_window_width() as f32 {
-            self.x = get_window_width() as f32 - area.width();
-            self.x_velocity = 0.0;
+            if self.window_loops {
+                self.x = 0.0;
+            } else {
+                self.x_velocity = -self.bounciness + 1.0;
+                self.x = get_window_width() as f32 - area.width();
+            }
         }
 
         if area.max_y() > get_window_height() as f32 {
-            self.y = get_window_height() as f32 - area.height();
-            self.y_velocity = 0.0;
+            if self.window_loops {
+                self.y = 0.0;
+            } else {
+                self.y = get_window_height() as f32 - area.height();
+                self.y_velocity = -self.bounciness + 1.0;
+            }
             self.on_ground = true;
         } else if area.min_y() < 0.0 {
-            self.y = 0.0;
-            self.y_velocity = 0.0;
+            if self.window_loops {
+                self.y = get_window_height() as f32 - area.height();
+            } else {
+                self.y = 0.0;
+                self.y_velocity = self.bounciness - 1.0;
+            }
         }
 
         if self.has_gravity {
@@ -175,7 +240,7 @@ impl CObject for CBox {
     fn push(&mut self, x_dir: f32, y_dir: f32) {
         let old_x_velocity = self.x_velocity;
         self.x_velocity += x_dir;
-        if self.get_terminal_horizontal_velocity() < self.x_velocity as f64 {
+        if self.get_terminal_horizontal_velocity() < self.x_velocity {
             self.x_velocity = old_x_velocity;
         }
 
@@ -206,6 +271,10 @@ impl CObject for CBox {
 
     fn get_side_face_area(&self) -> f32 {
         self.face.height()
+    }
+
+    fn get_charge(&self) -> f32 {
+        self.charge
     }
 }
 

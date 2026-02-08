@@ -2,7 +2,7 @@
 /target/
 /cengine/target/
 /cmacros/target/
-/cengine/extras/png_to_imace/target/
+/png_to_imace/target/
 
 # OS junk
 .DS_Store

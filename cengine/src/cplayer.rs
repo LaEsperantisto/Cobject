@@ -3,15 +3,15 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 pub struct CPlayer {
-    body: CBox,
+    pub body: CBox,
     try_jump: bool,
     jump_charge: f32,
 }
 
 impl CPlayer {
-    pub fn new(x: f32, y: f32) -> Self {
+    pub fn new(x: f32, y: f32, width: f32, height: f32) -> Self {
         let mut this = Self {
-            body: CBox::new(x, y, 50.0, 50.0, ccolor::GREEN),
+            body: CBox::new(x, y, width, height, ccolor::GREEN),
             try_jump: false,
             jump_charge: 0.0,
         };
@@ -26,9 +26,13 @@ impl CInputListener for CPlayer {
         if key == CKey::Space {
             self.try_jump = true;
         } else if key == CKey::W {
-            self.body.gravity = 0.2;
+            if self.body.has_gravity == false {
+                self.body.y_velocity -= 0.1;
+            } else {
+                self.body.gravity = 0.2;
+            }
         } else if key == CKey::G {
-            self.body.face.points[3] = (0.0, 0.0).into();
+            self.body.face.points[0] = (0.0, 0.0).into();
         } else if key == CKey::Unknown {
             self.body.face = CQuad::new(self.body.x, self.body.y, 50.0, 50.0, ccolor::GREEN);
         }
@@ -46,6 +50,10 @@ impl CInputListener for CPlayer {
             self.body.face.rotate(0.05);
         } else if key == CKey::Q {
             self.body.face.rotate(0.05);
+        } else if key == CKey::W {
+            if self.body.has_gravity == false {
+                self.body.push(0.0, -0.5);
+            }
         }
     }
 
@@ -53,7 +61,10 @@ impl CInputListener for CPlayer {
         if key == CKey::Space {
             self.try_jump = false;
         } else if key == CKey::W {
-            self.body.gravity = 1.0;
+            if self.body.has_gravity == false {
+            } else {
+                self.body.gravity = 1.0;
+            }
         }
     }
 }

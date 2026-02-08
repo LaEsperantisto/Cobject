@@ -103,7 +103,12 @@ impl CWindow {
     }
 
     pub fn show_window(&mut self) {
-        for drawable in &self.drawables {
+        for drawable in &self
+            .drawables
+            .iter()
+            .rev()
+            .collect::<Vec<&Rc<RefCell<dyn CDrawable>>>>()
+        {
             drawable
                 .borrow()
                 .draw(&mut self.pixels, self.width, self.height);

@@ -1,9 +1,17 @@
 [package]
 name = "cobject"
-version = "0.0.2"
+version = "0.1.0"
 edition = "2024"
+description = "A game engine that uses minifb as a foundation and currently only supports 2D."
+homepage = ""
+readme = "README.md"
+repository = "src"
+license = "MIT"
+documentation = "N/A"
 
 [dependencies]
 minifb = "0.28.0"
-cmacros = { path = "../cmacros" }
-log = "0.4.29"
+#cmacros = { path = "../cmacros" }
+
+[lib]
+path = "src/lib.rs"
